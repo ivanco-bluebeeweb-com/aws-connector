@@ -211,7 +211,7 @@ async def _cloud_overview(ctx, connection_id: str) -> ui.UINode:
         ])
     r = result.data
     return ui.Stack(direction="v", gap=3, align="stretch", children=[
-        ui.Stats(stats=[
+        ui.Stats(children=[
             ui.Stat(label="EC2 running", value=str(r.ec2_running)),
             ui.Stat(label="EC2 stopped", value=str(r.ec2_stopped)),
             ui.Stat(label="S3 buckets", value=str(r.s3_bucket_count)),
