@@ -1,0 +1,3979 @@
+{
+  "manifest_schema_version": 3,
+  "sdk_version": "5.11.0",
+  "app_id": "aws-connector",
+  "version": "0.1.0",
+  "name": "AWS (Amazon Web Services)",
+  "description": "Connect your own AWS account (BYOK Access Key, SigV4-signed requests) to see and manage EC2 (instances, security groups), S3 (buckets, objects), RDS (instances), Lambda (functions, invoke, logs), IAM (users, roles), CloudWatch (alarms, metrics) and Cost Explorer (cost and usage, forecasts) from Imperal. Your Access Key is verified against your own account (sts:GetCallerIdentity) before it's saved. Scoped to the operational core -- container orchestration, DNS/CDN and managed AI services are out of scope.",
+  "icon": "icon.svg",
+  "actions_explicit": true,
+  "system": false,
+  "capabilities": [
+    "aws:read",
+    "aws:write"
+  ],
+  "tools": [
+    {
+      "name": "connect_aws",
+      "description": "Connect your own AWS account by saving an Access Key ID + Secret Access Key pair, after checking they actually work via sts:GetCallerIdentity. A read-only IAM policy is strongly recommended for the key you create.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "aws.provider.connected"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "access_key_id": {
+            "default": "",
+            "description": "Your AWS Access Key ID, e.g. AKIAIOSFODNN7EXAMPLE.",
+            "title": "Access Key Id",
+            "type": "string"
+          },
+          "secret_access_key": {
+            "default": "",
+            "description": "Your AWS Secret Access Key -- shown only once by AWS when the key is created.",
+            "title": "Secret Access Key",
+            "type": "string"
+          },
+          "region": {
+            "default": "us-east-1",
+            "description": "Default AWS region for this connection, e.g. us-east-1, eu-west-1.",
+            "title": "Region",
+            "type": "string"
+          },
+          "session_token": {
+            "default": "",
+            "description": "Optional STS session token, only needed for temporary/assumed-role credentials.",
+            "title": "Session Token",
+            "type": "string"
+          },
+          "label": {
+            "default": "",
+            "description": "Optional friendly name for this AWS account connection.",
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "title": "ConnectAwsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "connected": {
+            "default": false,
+            "title": "Connected",
+            "type": "boolean"
+          },
+          "detail": {
+            "default": "",
+            "title": "Detail",
+            "type": "string"
+          },
+          "region": {
+            "default": "",
+            "title": "Region",
+            "type": "string"
+          },
+          "arn": {
+            "default": "",
+            "title": "Arn",
+            "type": "string"
+          }
+        },
+        "title": "ProviderConnection",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "aws-connector.connect_aws",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "disconnect_aws",
+      "description": "Disconnect an AWS account: deletes the saved Access Key ID/Secret Access Key pair. Nothing in AWS itself is changed; the key remains valid there until you deactivate or delete it yourself in IAM.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "aws.provider.disconnected"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the connection to disconnect.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "DisconnectAwsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "DeleteResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "aws-connector.disconnect_aws",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "list_connections",
+      "description": "List the connected AWS accounts.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "description": "Explicit empty params model -- V17 disallows untyped handlers.",
+        "properties": {},
+        "title": "NoParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "ProviderConnection": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "connected": {
+                "default": false,
+                "title": "Connected",
+                "type": "boolean"
+              },
+              "detail": {
+                "default": "",
+                "title": "Detail",
+                "type": "string"
+              },
+              "region": {
+                "default": "",
+                "title": "Region",
+                "type": "string"
+              },
+              "arn": {
+                "default": "",
+                "title": "Arn",
+                "type": "string"
+              }
+            },
+            "title": "ProviderConnection",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "connections": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/ProviderConnection"
+            },
+            "title": "Connections",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ProviderConnectionList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "list_ec2_instances",
+      "description": "List EC2 instances in the connected AWS account, optionally filtered by region and/or state.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "region": {
+            "default": "",
+            "description": "Region to list instances in. Leave empty to use the connection's default region.",
+            "title": "Region",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "description": "Filter by instance state: pending, running, stopping, stopped, shutting-down, terminated. Leave empty for all.",
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "title": "ListEc2InstancesParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Ec2Instance": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "instance_id": {
+                "default": "",
+                "title": "Instance Id",
+                "type": "string"
+              },
+              "instance_type": {
+                "default": "",
+                "title": "Instance Type",
+                "type": "string"
+              },
+              "state": {
+                "default": "",
+                "title": "State",
+                "type": "string"
+              },
+              "region": {
+                "default": "",
+                "title": "Region",
+                "type": "string"
+              },
+              "launch_time": {
+                "default": "",
+                "title": "Launch Time",
+                "type": "string"
+              },
+              "public_ip": {
+                "default": "",
+                "title": "Public Ip",
+                "type": "string"
+              },
+              "private_ip": {
+                "default": "",
+                "title": "Private Ip",
+                "type": "string"
+              },
+              "vpc_id": {
+                "default": "",
+                "title": "Vpc Id",
+                "type": "string"
+              },
+              "subnet_id": {
+                "default": "",
+                "title": "Subnet Id",
+                "type": "string"
+              },
+              "name_tag": {
+                "default": "",
+                "title": "Name Tag",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "Ec2Instance",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "instances": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/Ec2Instance"
+            },
+            "title": "Instances",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "Ec2InstanceList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "get_ec2_instance",
+      "description": "Read one EC2 instance in full: type, state, network details, and its Name tag.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "region": {
+            "default": "",
+            "description": "Region the instance lives in.",
+            "title": "Region",
+            "type": "string"
+          },
+          "instance_id": {
+            "description": "EC2 instance ID, e.g. i-0123456789abcdef0.",
+            "title": "Instance Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "instance_id"
+        ],
+        "title": "GetEc2InstanceParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "instance_id": {
+            "default": "",
+            "title": "Instance Id",
+            "type": "string"
+          },
+          "instance_type": {
+            "default": "",
+            "title": "Instance Type",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "title": "State",
+            "type": "string"
+          },
+          "region": {
+            "default": "",
+            "title": "Region",
+            "type": "string"
+          },
+          "launch_time": {
+            "default": "",
+            "title": "Launch Time",
+            "type": "string"
+          },
+          "public_ip": {
+            "default": "",
+            "title": "Public Ip",
+            "type": "string"
+          },
+          "private_ip": {
+            "default": "",
+            "title": "Private Ip",
+            "type": "string"
+          },
+          "vpc_id": {
+            "default": "",
+            "title": "Vpc Id",
+            "type": "string"
+          },
+          "subnet_id": {
+            "default": "",
+            "title": "Subnet Id",
+            "type": "string"
+          },
+          "ami_id": {
+            "default": "",
+            "title": "Ami Id",
+            "type": "string"
+          },
+          "key_name": {
+            "default": "",
+            "title": "Key Name",
+            "type": "string"
+          },
+          "security_groups": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Security Groups",
+            "type": "array"
+          },
+          "tags": {
+            "default": "",
+            "title": "Tags",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "Ec2InstanceDetail",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "start_ec2_instance",
+      "description": "Start a stopped EC2 instance.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "aws.ec2.instance.started"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "region": {
+            "default": "",
+            "description": "Region the instance lives in.",
+            "title": "Region",
+            "type": "string"
+          },
+          "instance_id": {
+            "description": "EC2 instance ID to act on.",
+            "title": "Instance Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "instance_id"
+        ],
+        "title": "Ec2ActionParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "instance_id": {
+            "default": "",
+            "title": "Instance Id",
+            "type": "string"
+          },
+          "previous_state": {
+            "default": "",
+            "title": "Previous State",
+            "type": "string"
+          },
+          "current_state": {
+            "default": "",
+            "title": "Current State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "Ec2ActionResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "aws-connector.start_ec2_instance",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "stop_ec2_instance",
+      "description": "Stop a running EC2 instance.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "aws.ec2.instance.stopped"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "region": {
+            "default": "",
+            "description": "Region the instance lives in.",
+            "title": "Region",
+            "type": "string"
+          },
+          "instance_id": {
+            "description": "EC2 instance ID to act on.",
+            "title": "Instance Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "instance_id"
+        ],
+        "title": "Ec2ActionParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "instance_id": {
+            "default": "",
+            "title": "Instance Id",
+            "type": "string"
+          },
+          "previous_state": {
+            "default": "",
+            "title": "Previous State",
+            "type": "string"
+          },
+          "current_state": {
+            "default": "",
+            "title": "Current State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "Ec2ActionResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "aws-connector.stop_ec2_instance",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "list_s3_buckets",
+      "description": "List S3 buckets in the connected AWS account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListS3BucketsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "S3Bucket": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "bucket_name": {
+                "default": "",
+                "title": "Bucket Name",
+                "type": "string"
+              },
+              "creation_date": {
+                "default": "",
+                "title": "Creation Date",
+                "type": "string"
+              },
+              "region": {
+                "default": "",
+                "title": "Region",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "S3Bucket",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "buckets": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/S3Bucket"
+            },
+            "title": "Buckets",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "S3BucketList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "list_s3_objects",
+      "description": "List objects inside one S3 bucket, optionally filtered by key prefix.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "bucket_name": {
+            "description": "Name of the S3 bucket to list objects from.",
+            "title": "Bucket Name",
+            "type": "string"
+          },
+          "prefix": {
+            "default": "",
+            "description": "Only return objects whose key starts with this prefix, e.g. 'logs/2026/'.",
+            "title": "Prefix",
+            "type": "string"
+          },
+          "region": {
+            "default": "",
+            "description": "Region the bucket lives in. Leave empty to use the connection's default region.",
+            "title": "Region",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bucket_name"
+        ],
+        "title": "ListS3ObjectsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "S3Object": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "key": {
+                "default": "",
+                "title": "Key",
+                "type": "string"
+              },
+              "size_bytes": {
+                "default": 0,
+                "title": "Size Bytes",
+                "type": "integer"
+              },
+              "last_modified": {
+                "default": "",
+                "title": "Last Modified",
+                "type": "string"
+              },
+              "storage_class": {
+                "default": "",
+                "title": "Storage Class",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "S3Object",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "objects": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/S3Object"
+            },
+            "title": "Objects",
+            "type": "array"
+          },
+          "bucket_name": {
+            "default": "",
+            "title": "Bucket Name",
+            "type": "string"
+          },
+          "prefix": {
+            "default": "",
+            "title": "Prefix",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "S3ObjectList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "list_rds_instances",
+      "description": "List RDS database instances in the connected AWS account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "region": {
+            "default": "",
+            "description": "Region to list RDS instances in.",
+            "title": "Region",
+            "type": "string"
+          }
+        },
+        "title": "ListRdsInstancesParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "RdsInstance": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "default": "",
+                "title": "Status",
+                "type": "string"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "db_instance_identifier": {
+                "default": "",
+                "title": "Db Instance Identifier",
+                "type": "string"
+              },
+              "engine": {
+                "default": "",
+                "title": "Engine",
+                "type": "string"
+              },
+              "engine_version": {
+                "default": "",
+                "title": "Engine Version",
+                "type": "string"
+              },
+              "instance_class": {
+                "default": "",
+                "title": "Instance Class",
+                "type": "string"
+              },
+              "allocated_storage_gb": {
+                "default": 0,
+                "title": "Allocated Storage Gb",
+                "type": "integer"
+              },
+              "multi_az": {
+                "default": false,
+                "title": "Multi Az",
+                "type": "boolean"
+              },
+              "endpoint": {
+                "default": "",
+                "title": "Endpoint",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "RdsInstance",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "instances": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/RdsInstance"
+            },
+            "title": "Instances",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "RdsInstanceList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "list_rds_snapshots",
+      "description": "List RDS snapshots, optionally filtered to one DB instance.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "region": {
+            "default": "",
+            "description": "Region to list snapshots in.",
+            "title": "Region",
+            "type": "string"
+          },
+          "db_instance_identifier": {
+            "default": "",
+            "description": "Filter to snapshots of one DB instance. Leave empty for all.",
+            "title": "Db Instance Identifier",
+            "type": "string"
+          }
+        },
+        "title": "ListRdsSnapshotsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "RdsSnapshot": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "default": "",
+                "title": "Status",
+                "type": "string"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "snapshot_id": {
+                "default": "",
+                "title": "Snapshot Id",
+                "type": "string"
+              },
+              "db_instance_identifier": {
+                "default": "",
+                "title": "Db Instance Identifier",
+                "type": "string"
+              },
+              "created_at": {
+                "default": "",
+                "title": "Created At",
+                "type": "string"
+              },
+              "engine": {
+                "default": "",
+                "title": "Engine",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "RdsSnapshot",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "snapshots": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/RdsSnapshot"
+            },
+            "title": "Snapshots",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "RdsSnapshotList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "list_lambda_functions",
+      "description": "List Lambda functions in the connected AWS account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "region": {
+            "default": "",
+            "description": "Region to list functions in.",
+            "title": "Region",
+            "type": "string"
+          }
+        },
+        "title": "ListLambdaFunctionsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "LambdaFunction": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "function_name": {
+                "default": "",
+                "title": "Function Name",
+                "type": "string"
+              },
+              "runtime": {
+                "default": "",
+                "title": "Runtime",
+                "type": "string"
+              },
+              "handler": {
+                "default": "",
+                "title": "Handler",
+                "type": "string"
+              },
+              "memory_mb": {
+                "default": 0,
+                "title": "Memory Mb",
+                "type": "integer"
+              },
+              "timeout_seconds": {
+                "default": 0,
+                "title": "Timeout Seconds",
+                "type": "integer"
+              },
+              "last_modified": {
+                "default": "",
+                "title": "Last Modified",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "LambdaFunction",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "functions": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/LambdaFunction"
+            },
+            "title": "Functions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "LambdaFunctionList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "invoke_lambda",
+      "description": "Invoke a Lambda function synchronously with a JSON event payload.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "aws.lambda.function.invoked"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "region": {
+            "default": "",
+            "description": "Region the function lives in.",
+            "title": "Region",
+            "type": "string"
+          },
+          "function_name": {
+            "description": "Name or ARN of the Lambda function to invoke.",
+            "title": "Function Name",
+            "type": "string"
+          },
+          "payload_json": {
+            "default": "{}",
+            "description": "JSON payload to pass as the function's event input.",
+            "title": "Payload Json",
+            "type": "string"
+          }
+        },
+        "required": [
+          "function_name"
+        ],
+        "title": "InvokeLambdaParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "function_name": {
+            "default": "",
+            "title": "Function Name",
+            "type": "string"
+          },
+          "status_code": {
+            "default": 0,
+            "title": "Status Code",
+            "type": "integer"
+          },
+          "response_json": {
+            "default": "",
+            "title": "Response Json",
+            "type": "string"
+          },
+          "error": {
+            "default": "",
+            "title": "Error",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "LambdaInvokeResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "aws-connector.invoke_lambda",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "list_iam_users",
+      "description": "List IAM users in the connected AWS account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListIamUsersParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "IamUser": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "user_name": {
+                "default": "",
+                "title": "User Name",
+                "type": "string"
+              },
+              "user_id": {
+                "default": "",
+                "title": "User Id",
+                "type": "string"
+              },
+              "arn": {
+                "default": "",
+                "title": "Arn",
+                "type": "string"
+              },
+              "created_at": {
+                "default": "",
+                "title": "Created At",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "IamUser",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "users": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/IamUser"
+            },
+            "title": "Users",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "IamUserList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "list_iam_roles",
+      "description": "List IAM roles in the connected AWS account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListIamRolesParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "IamRole": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "role_name": {
+                "default": "",
+                "title": "Role Name",
+                "type": "string"
+              },
+              "role_id": {
+                "default": "",
+                "title": "Role Id",
+                "type": "string"
+              },
+              "arn": {
+                "default": "",
+                "title": "Arn",
+                "type": "string"
+              },
+              "created_at": {
+                "default": "",
+                "title": "Created At",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "IamRole",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "roles": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/IamRole"
+            },
+            "title": "Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "IamRoleList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "list_cloudwatch_alarms",
+      "description": "List CloudWatch alarms, optionally filtered by state.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "region": {
+            "default": "",
+            "description": "Region to list alarms in.",
+            "title": "Region",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "description": "Filter by alarm state: OK, ALARM, INSUFFICIENT_DATA. Leave empty for all.",
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "title": "ListAlarmsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "CloudWatchAlarm": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "alarm_name": {
+                "default": "",
+                "title": "Alarm Name",
+                "type": "string"
+              },
+              "state": {
+                "default": "",
+                "title": "State",
+                "type": "string"
+              },
+              "metric_name": {
+                "default": "",
+                "title": "Metric Name",
+                "type": "string"
+              },
+              "namespace": {
+                "default": "",
+                "title": "Namespace",
+                "type": "string"
+              },
+              "comparison_operator": {
+                "default": "",
+                "title": "Comparison Operator",
+                "type": "string"
+              },
+              "threshold": {
+                "default": 0.0,
+                "title": "Threshold",
+                "type": "number"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "CloudWatchAlarm",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "alarms": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/CloudWatchAlarm"
+            },
+            "title": "Alarms",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "CloudWatchAlarmList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "get_metric_statistics",
+      "description": "Read CloudWatch metric datapoints for a namespace/metric over a time window.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "region": {
+            "default": "",
+            "description": "Region the metric lives in.",
+            "title": "Region",
+            "type": "string"
+          },
+          "namespace": {
+            "description": "CloudWatch namespace, e.g. AWS/EC2, AWS/Lambda, AWS/RDS.",
+            "title": "Namespace",
+            "type": "string"
+          },
+          "metric_name": {
+            "description": "Metric name, e.g. CPUUtilization, Invocations, Errors.",
+            "title": "Metric Name",
+            "type": "string"
+          },
+          "dimension_name": {
+            "default": "",
+            "description": "Dimension to filter by, e.g. InstanceId.",
+            "title": "Dimension Name",
+            "type": "string"
+          },
+          "dimension_value": {
+            "default": "",
+            "description": "Value of the dimension, e.g. i-0123456789abcdef0.",
+            "title": "Dimension Value",
+            "type": "string"
+          },
+          "period_seconds": {
+            "default": 300,
+            "description": "Granularity of the returned datapoints, in seconds.",
+            "title": "Period Seconds",
+            "type": "integer"
+          },
+          "hours_back": {
+            "default": 24,
+            "description": "How many hours of history to fetch.",
+            "title": "Hours Back",
+            "type": "integer"
+          },
+          "statistic": {
+            "default": "Average",
+            "description": "Statistic to compute: Average, Sum, Minimum, Maximum, SampleCount.",
+            "title": "Statistic",
+            "type": "string"
+          }
+        },
+        "required": [
+          "namespace",
+          "metric_name"
+        ],
+        "title": "GetMetricStatisticsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "MetricDatapoint": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "timestamp": {
+                "default": "",
+                "title": "Timestamp",
+                "type": "string"
+              },
+              "value": {
+                "default": 0.0,
+                "title": "Value",
+                "type": "number"
+              },
+              "unit": {
+                "default": "",
+                "title": "Unit",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "MetricDatapoint",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "metric_name": {
+            "default": "",
+            "title": "Metric Name",
+            "type": "string"
+          },
+          "namespace": {
+            "default": "",
+            "title": "Namespace",
+            "type": "string"
+          },
+          "datapoints": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/MetricDatapoint"
+            },
+            "title": "Datapoints",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "MetricStatisticsResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "get_cost_and_usage",
+      "description": "Read AWS cost and usage for the connected account over a time window, broken down by service.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "days_back": {
+            "default": 30,
+            "description": "How many days of cost history to fetch.",
+            "title": "Days Back",
+            "type": "integer"
+          },
+          "granularity": {
+            "default": "DAILY",
+            "description": "DAILY or MONTHLY.",
+            "title": "Granularity",
+            "type": "string"
+          },
+          "group_by_service": {
+            "default": true,
+            "description": "Break the totals down by AWS service.",
+            "title": "Group By Service",
+            "type": "boolean"
+          }
+        },
+        "title": "GetCostAndUsageParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "CostByService": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "service": {
+                "default": "",
+                "title": "Service",
+                "type": "string"
+              },
+              "amount_usd": {
+                "default": 0.0,
+                "title": "Amount Usd",
+                "type": "number"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "CostByService",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "total_amount_usd": {
+            "default": 0.0,
+            "title": "Total Amount Usd",
+            "type": "number"
+          },
+          "period_start": {
+            "default": "",
+            "title": "Period Start",
+            "type": "string"
+          },
+          "period_end": {
+            "default": "",
+            "title": "Period End",
+            "type": "string"
+          },
+          "by_service": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/CostByService"
+            },
+            "title": "By Service",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "CostAndUsageResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "get_cost_forecast",
+      "description": "Read AWS's own forecast of upcoming spend for the connected account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "days_forward": {
+            "default": 30,
+            "description": "How many days ahead to forecast.",
+            "title": "Days Forward",
+            "type": "integer"
+          }
+        },
+        "title": "GetCostForecastParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "total_forecast_usd": {
+            "default": 0.0,
+            "title": "Total Forecast Usd",
+            "type": "number"
+          },
+          "period_start": {
+            "default": "",
+            "title": "Period Start",
+            "type": "string"
+          },
+          "period_end": {
+            "default": "",
+            "title": "Period End",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "CostForecastResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    },
+    {
+      "name": "get_cloud_overview",
+      "description": "Value-add report: one-glance AWS account health snapshot -- EC2 instance counts by state, S3 bucket count, RDS instance count, and this month's cost so far.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the AWS connection to use.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "region": {
+            "default": "",
+            "description": "Region to summarize. Leave empty to use the connection's default region.",
+            "title": "Region",
+            "type": "string"
+          }
+        },
+        "title": "GetCloudOverviewParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "ec2_running": {
+            "default": 0,
+            "title": "Ec2 Running",
+            "type": "integer"
+          },
+          "ec2_stopped": {
+            "default": 0,
+            "title": "Ec2 Stopped",
+            "type": "integer"
+          },
+          "s3_bucket_count": {
+            "default": 0,
+            "title": "S3 Bucket Count",
+            "type": "integer"
+          },
+          "rds_instance_count": {
+            "default": 0,
+            "title": "Rds Instance Count",
+            "type": "integer"
+          },
+          "lambda_function_count": {
+            "default": 0,
+            "title": "Lambda Function Count",
+            "type": "integer"
+          },
+          "alarms_in_alarm_state": {
+            "default": 0,
+            "title": "Alarms In Alarm State",
+            "type": "integer"
+          },
+          "month_to_date_cost_usd": {
+            "default": 0.0,
+            "title": "Month To Date Cost Usd",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "CloudOverview",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "aws-connector"
+    }
+  ],
+  "signals": [],
+  "schedules": [],
+  "required_scopes": [],
+  "icon_size_bytes": 3178,
+  "lifecycle": {
+    "health_check": {
+      "interval_sec": 60
+    }
+  },
+  "secrets": [
+    {
+      "name": "aws_connections",
+      "description": "Your connected AWS accounts -- stored as a JSON array, one entry per account, each with its own Access Key ID, Secret Access Key, default region, optional session token, and a friendly label. Managed through connect_aws / disconnect_aws -- you should not need to edit this directly.",
+      "required": true,
+      "write_mode": "both",
+      "max_bytes": 65536,
+      "scope": "user",
+      "rotation_hint_days": 90
+    }
+  ],
+  "panels": [
+    {
+      "panel_id": "secrets",
+      "slot": "right",
+      "title": "Secrets",
+      "tree": {},
+      "icon": "KeyRound",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "aws_connect",
+      "slot": "left",
+      "title": "AWS",
+      "tree": {},
+      "icon": "☁️",
+      "refresh": "manual",
+      "center_overlay": false,
+      "default_width": 320,
+      "min_width": 260,
+      "max_width": 420
+    },
+    {
+      "panel_id": "aws_connect_help",
+      "slot": "center",
+      "title": "How to connect AWS",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": true
+    },
+    {
+      "panel_id": "aws_center",
+      "slot": "center",
+      "title": "AWS",
+      "tree": {},
+      "icon": "☁️",
+      "refresh": "manual",
+      "center_overlay": true
+    },
+    {
+      "panel_id": "aws_settings",
+      "slot": "center",
+      "title": "AWS -- App settings",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": true
+    }
+  ],
+  "pricing": {
+    "model": "per_action",
+    "currency": "tokens",
+    "monthly_price": 0,
+    "free_tools": [
+      "connect_aws",
+      "disconnect_aws",
+      "list_connections"
+    ],
+    "tool_prices": {
+      "connect_aws": 0,
+      "disconnect_aws": 0,
+      "list_connections": 0,
+      "list_ec2_instances": 8,
+      "get_ec2_instance": 8,
+      "list_s3_buckets": 8,
+      "list_s3_objects": 8,
+      "list_rds_instances": 8,
+      "list_rds_snapshots": 8,
+      "list_lambda_functions": 8,
+      "list_iam_users": 8,
+      "list_iam_roles": 8,
+      "list_cloudwatch_alarms": 8,
+      "get_metric_statistics": 8,
+      "get_cost_and_usage": 8,
+      "get_cost_forecast": 8,
+      "start_ec2_instance": 16,
+      "stop_ec2_instance": 16,
+      "invoke_lambda": 16,
+      "get_cloud_overview": 40
+    }
+  }
+}

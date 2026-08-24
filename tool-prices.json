@@ -1,0 +1,22 @@
+{
+  "connect_aws": 0,
+  "disconnect_aws": 0,
+  "list_connections": 0,
+  "list_ec2_instances": 8,
+  "get_ec2_instance": 8,
+  "list_s3_buckets": 8,
+  "list_s3_objects": 8,
+  "list_rds_instances": 8,
+  "list_rds_snapshots": 8,
+  "list_lambda_functions": 8,
+  "list_iam_users": 8,
+  "list_iam_roles": 8,
+  "list_cloudwatch_alarms": 8,
+  "get_metric_statistics": 8,
+  "get_cost_and_usage": 8,
+  "get_cost_forecast": 8,
+  "start_ec2_instance": 16,
+  "stop_ec2_instance": 16,
+  "invoke_lambda": 16,
+  "get_cloud_overview": 40
+}
