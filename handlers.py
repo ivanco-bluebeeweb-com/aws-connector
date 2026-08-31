@@ -226,7 +226,7 @@ async def list_connections(ctx, params: NoParams) -> ActionResult:
         )
         for c in connections
     ]
-    return ActionResult.success(ProviderConnectionList(connections=items))
+    return ActionResult.success(ProviderConnectionList(connections=items), summary="Connections listed.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -270,7 +270,7 @@ async def list_ec2_instances(ctx, params: ListEc2InstancesParams) -> ActionResul
         return _err("Couldn't list EC2 instances", e)
     root = _xml_root(xml_text)
     instances = [_ec2_instance_from_xml(item, region) for item in _xml_items(root, "item") if _xml_text(item, "instanceId")]
-    return ActionResult.success(Ec2InstanceList(instances=instances))
+    return ActionResult.success(Ec2InstanceList(instances=instances), summary="Ec2 instances listed.")
 
 
 @chat.function(
@@ -309,7 +309,7 @@ async def get_ec2_instance(ctx, params: GetEc2InstanceParams) -> ActionResult:
             vpc_id=_xml_text(item, "vpcId"), subnet_id=_xml_text(item, "subnetId"),
             ami_id=_xml_text(item, "imageId"), key_name=_xml_text(item, "keyName"),
             security_groups=groups, name_tag=_xml_name_tag(item),
-        ))
+        ), summary="Ec2 instance retrieved.")
     return ActionResult.error("EC2 instance not found.", code="AWS_EC2_NOT_FOUND")
 
 
@@ -407,7 +407,7 @@ async def list_s3_buckets(ctx, params: ListS3BucketsParams) -> ActionResult:
         S3Bucket(bucket_name=_xml_text(b, "Name"), creation_date=_xml_text(b, "CreationDate"), region=conn.get("region", ""))
         for b in _xml_items(root, "Bucket")
     ]
-    return ActionResult.success(S3BucketList(buckets=buckets))
+    return ActionResult.success(S3BucketList(buckets=buckets), summary="S3 buckets listed.")
 
 
 @chat.function(
@@ -437,7 +437,7 @@ async def list_s3_objects(ctx, params: ListS3ObjectsParams) -> ActionResult:
         )
         for c in _xml_items(root, "Contents")
     ]
-    return ActionResult.success(S3ObjectList(objects=objects, bucket_name=params.bucket_name, prefix=params.prefix))
+    return ActionResult.success(S3ObjectList(objects=objects, bucket_name=params.bucket_name, prefix=params.prefix), summary="S3 objects listed.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -474,7 +474,7 @@ async def list_rds_instances(ctx, params: ListRdsInstancesParams) -> ActionResul
             multi_az=(_xml_text(item, "MultiAZ").lower() == "true"),
             endpoint=_xml_text(endpoint_el, "Address") if endpoint_el is not None else "",
         ))
-    return ActionResult.success(RdsInstanceList(instances=instances))
+    return ActionResult.success(RdsInstanceList(instances=instances), summary="Rds instances listed.")
 
 
 @chat.function(
@@ -505,7 +505,7 @@ async def list_rds_snapshots(ctx, params: ListRdsSnapshotsParams) -> ActionResul
             status=_xml_text(item, "Status"), created_at=_xml_text(item, "SnapshotCreateTime"),
             engine=_xml_text(item, "Engine"),
         ))
-    return ActionResult.success(RdsSnapshotList(snapshots=snapshots))
+    return ActionResult.success(RdsSnapshotList(snapshots=snapshots), summary="Rds snapshots listed.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -538,7 +538,7 @@ async def list_lambda_functions(ctx, params: ListLambdaFunctionsParams) -> Actio
         )
         for f in (body.get("Functions") or [])
     ]
-    return ActionResult.success(LambdaFunctionList(functions=functions))
+    return ActionResult.success(LambdaFunctionList(functions=functions), summary="Lambda functions listed.")
 
 
 @chat.function(
@@ -603,7 +603,7 @@ async def list_iam_users(ctx, params: ListIamUsersParams) -> ActionResult:
         )
         for u in _xml_items(root, "member") if _xml_text(u, "UserName")
     ]
-    return ActionResult.success(IamUserList(users=users))
+    return ActionResult.success(IamUserList(users=users), summary="Iam users listed.")
 
 
 @chat.function(
@@ -630,7 +630,7 @@ async def list_iam_roles(ctx, params: ListIamRolesParams) -> ActionResult:
         )
         for r in _xml_items(root, "member") if _xml_text(r, "RoleName")
     ]
-    return ActionResult.success(IamRoleList(roles=roles))
+    return ActionResult.success(IamRoleList(roles=roles), summary="Iam roles listed.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -669,7 +669,7 @@ async def list_cloudwatch_alarms(ctx, params: ListAlarmsParams) -> ActionResult:
             namespace=_xml_text(item, "Namespace"), comparison_operator=_xml_text(item, "ComparisonOperator"),
             threshold=float(_xml_text(item, "Threshold") or 0),
         ))
-    return ActionResult.success(CloudWatchAlarmList(alarms=alarms))
+    return ActionResult.success(CloudWatchAlarmList(alarms=alarms), summary="Cloudwatch alarms listed.")
 
 
 @chat.function(
@@ -712,7 +712,7 @@ async def get_metric_statistics(ctx, params: GetMetricStatisticsParams) -> Actio
         points.append(MetricDatapoint(
             timestamp=ts, value=float(_xml_text(dp, val_tag) or 0), unit=_xml_text(dp, "Unit"),
         ))
-    return ActionResult.success(MetricStatisticsResult(metric_name=params.metric_name, namespace=params.namespace, datapoints=points))
+    return ActionResult.success(MetricStatisticsResult(metric_name=params.metric_name, namespace=params.namespace, datapoints=points), summary="Metric statistics retrieved.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -758,7 +758,7 @@ async def get_cost_and_usage(ctx, params: GetCostAndUsageParams) -> ActionResult
         total_amount_usd=float(total.quantize(Decimal("0.01"))),
         period_start=start.isoformat(), period_end=end.isoformat(),
         by_service=by_service,
-    ))
+    ), summary="Cost and usage retrieved.")
 
 
 @chat.function(
@@ -785,7 +785,7 @@ async def get_cost_forecast(ctx, params: GetCostForecastParams) -> ActionResult:
     return ActionResult.success(CostForecastResult(
         total_forecast_usd=float(total.quantize(Decimal("0.01"))),
         period_start=start.isoformat(), period_end=end.isoformat(),
-    ))
+    ), summary="Cost forecast retrieved.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -843,5 +843,5 @@ async def get_cloud_overview(ctx, params: GetCloudOverviewParams) -> ActionResul
     return ActionResult.success(CloudOverview(
         ec2_running=ec2_running, ec2_stopped=ec2_stopped, s3_bucket_count=s3_count,
         rds_instance_count=rds_count, month_to_date_cost_usd=float(month_cost.quantize(Decimal("0.01"))),
-    ))
+    ), summary="Cloud overview retrieved.")
 
