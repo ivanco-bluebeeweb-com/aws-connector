@@ -45,6 +45,8 @@ class ProviderConnection(sdl.Entity):
 
 
 class ProviderConnectionList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     connections: list[ProviderConnection] = []
 
 
@@ -53,6 +55,7 @@ class DisconnectAwsParams(BaseModel):
 
 
 class DeleteResult(sdl.Entity):
+    title: str = ""
     deleted: bool = False
     id: str = ""
 
@@ -69,6 +72,8 @@ class ListEc2InstancesParams(BaseModel):
 
 
 class Ec2Instance(sdl.Entity):
+    id: str = ""
+    title: str = ""
     instance_id: str = ""
     instance_type: str = ""
     state: str = ""
@@ -82,6 +87,8 @@ class Ec2Instance(sdl.Entity):
 
 
 class Ec2InstanceList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     instances: list[Ec2Instance] = []
 
 
@@ -92,6 +99,8 @@ class GetEc2InstanceParams(BaseModel):
 
 
 class Ec2InstanceDetail(sdl.Entity):
+    id: str = ""
+    title: str = ""
     instance_id: str = ""
     instance_type: str = ""
     state: str = ""
@@ -114,6 +123,8 @@ class Ec2ActionParams(BaseModel):
 
 
 class Ec2ActionResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     instance_id: str = ""
     previous_state: str = ""
     current_state: str = ""
@@ -125,6 +136,8 @@ class ListSecurityGroupsParams(BaseModel):
 
 
 class SecurityGroup(sdl.Entity):
+    id: str = ""
+    title: str = ""
     group_id: str = ""
     group_name: str = ""
     description: str = ""
@@ -132,6 +145,8 @@ class SecurityGroup(sdl.Entity):
 
 
 class SecurityGroupList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     groups: list[SecurityGroup] = []
 
 
@@ -141,6 +156,8 @@ class ListEbsVolumesParams(BaseModel):
 
 
 class EbsVolume(sdl.Entity):
+    id: str = ""
+    title: str = ""
     volume_id: str = ""
     size_gb: int = 0
     volume_type: str = ""
@@ -149,6 +166,8 @@ class EbsVolume(sdl.Entity):
 
 
 class EbsVolumeList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     volumes: list[EbsVolume] = []
 
 
@@ -162,12 +181,16 @@ class ListS3BucketsParams(BaseModel):
 
 
 class S3Bucket(sdl.Entity):
+    id: str = ""
+    title: str = ""
     bucket_name: str = ""
     creation_date: str = ""
     region: str = ""
 
 
 class S3BucketList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     buckets: list[S3Bucket] = []
 
 
@@ -179,6 +202,8 @@ class ListS3ObjectsParams(BaseModel):
 
 
 class S3Object(sdl.Entity):
+    id: str = ""
+    title: str = ""
     key: str = ""
     size_bytes: int = 0
     last_modified: str = ""
@@ -186,6 +211,8 @@ class S3Object(sdl.Entity):
 
 
 class S3ObjectList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     objects: list[S3Object] = []
     bucket_name: str = ""
     prefix: str = ""
@@ -214,6 +241,8 @@ class ListRdsInstancesParams(BaseModel):
 
 
 class RdsInstance(sdl.Entity):
+    id: str = ""
+    title: str = ""
     db_instance_identifier: str = ""
     engine: str = ""
     engine_version: str = ""
@@ -225,6 +254,8 @@ class RdsInstance(sdl.Entity):
 
 
 class RdsInstanceList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     instances: list[RdsInstance] = []
 
 
@@ -235,6 +266,8 @@ class ListRdsSnapshotsParams(BaseModel):
 
 
 class RdsSnapshot(sdl.Entity):
+    id: str = ""
+    title: str = ""
     snapshot_id: str = ""
     db_instance_identifier: str = ""
     status: str = ""
@@ -243,6 +276,8 @@ class RdsSnapshot(sdl.Entity):
 
 
 class RdsSnapshotList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     snapshots: list[RdsSnapshot] = []
 
 
@@ -257,6 +292,8 @@ class ListLambdaFunctionsParams(BaseModel):
 
 
 class LambdaFunction(sdl.Entity):
+    id: str = ""
+    title: str = ""
     function_name: str = ""
     runtime: str = ""
     handler: str = ""
@@ -266,6 +303,8 @@ class LambdaFunction(sdl.Entity):
 
 
 class LambdaFunctionList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     functions: list[LambdaFunction] = []
 
 
@@ -277,6 +316,8 @@ class InvokeLambdaParams(BaseModel):
 
 
 class LambdaInvokeResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     function_name: str = ""
     status_code: int = 0
     response_json: str = ""
@@ -293,6 +334,8 @@ class ListIamUsersParams(BaseModel):
 
 
 class IamUser(sdl.Entity):
+    id: str = ""
+    title: str = ""
     user_name: str = ""
     user_id: str = ""
     arn: str = ""
@@ -300,6 +343,8 @@ class IamUser(sdl.Entity):
 
 
 class IamUserList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     users: list[IamUser] = []
 
 
@@ -308,6 +353,8 @@ class ListIamRolesParams(BaseModel):
 
 
 class IamRole(sdl.Entity):
+    id: str = ""
+    title: str = ""
     role_name: str = ""
     role_id: str = ""
     arn: str = ""
@@ -315,6 +362,8 @@ class IamRole(sdl.Entity):
 
 
 class IamRoleList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     roles: list[IamRole] = []
 
 
@@ -323,6 +372,8 @@ class GetCallerIdentityParams(BaseModel):
 
 
 class CallerIdentity(sdl.Entity):
+    id: str = ""
+    title: str = ""
     account_id: str = ""
     arn: str = ""
     user_id: str = ""
@@ -340,6 +391,8 @@ class ListAlarmsParams(BaseModel):
 
 
 class CloudWatchAlarm(sdl.Entity):
+    id: str = ""
+    title: str = ""
     alarm_name: str = ""
     state: str = ""
     metric_name: str = ""
@@ -349,6 +402,8 @@ class CloudWatchAlarm(sdl.Entity):
 
 
 class CloudWatchAlarmList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     alarms: list[CloudWatchAlarm] = []
 
 
@@ -365,12 +420,16 @@ class GetMetricStatisticsParams(BaseModel):
 
 
 class MetricDatapoint(sdl.Entity):
+    id: str = ""
+    title: str = ""
     timestamp: str = ""
     value: float = 0.0
     unit: str = ""
 
 
 class MetricStatisticsResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     metric_name: str = ""
     namespace: str = ""
     datapoints: list[MetricDatapoint] = []
@@ -389,11 +448,15 @@ class GetCostAndUsageParams(BaseModel):
 
 
 class CostByService(sdl.Entity):
+    id: str = ""
+    title: str = ""
     service: str = ""
     amount_usd: float = 0.0
 
 
 class CostAndUsageResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     total_amount_usd: float = 0.0
     period_start: str = ""
     period_end: str = ""
@@ -406,6 +469,8 @@ class GetCostForecastParams(BaseModel):
 
 
 class CostForecastResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     total_forecast_usd: float = 0.0
     period_start: str = ""
     period_end: str = ""
@@ -422,6 +487,8 @@ class GetCloudOverviewParams(BaseModel):
 
 
 class CloudOverview(sdl.Entity):
+    id: str = ""
+    title: str = ""
     ec2_running: int = 0
     ec2_stopped: int = 0
     s3_bucket_count: int = 0
